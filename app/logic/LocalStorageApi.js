@@ -13,13 +13,15 @@ class LocalStorage {
 		}
 	}
 
-	saveDataInLocalStorage(name, data) {
+	saveDataInLocalStorage(name, data, callBackChange) {
 		console.log(name, data);
 		if (typeof data === 'object') {
 			const objectString = JSON.stringify(data);
 			window.localStorage.setItem(name, objectString);
+			callBackChange;
 		} else {
 			window.localStorage.setItem(name, data);
+			callBackChange;
 		}
 	}
 

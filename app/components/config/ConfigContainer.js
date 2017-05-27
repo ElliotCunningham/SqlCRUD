@@ -5,16 +5,33 @@ import ConfigFormulaire from './ConfigFormulaire';
 
 import LocalStorageApi from '../../logic/LocalStorageApi';
 
-const _saveDataInLocalStorage = (name, data) => {
-	LocalStorageApi.saveDataInLocalStorage(name, data);
+const _reloadState = () => {
+	const data = LocalStorageApi.getDataInLocalStorage('conectionInfo', true);
+	const adress = data.adress;
+	const port = data.port;
+	const user = data.user;
+	const passwd = data.password;
+
+	return {
+		adress,
+		port,
+		user,
+		passwd
+	};
+};
+
+const _saveDataInLocalStorage = (name, data, callback) => {
+	LocalStorageApi.saveDataInLocalStorage(name, data, callback);
 };
 
 class ConfigContainer extends Component {
 	constructor() {
 		super()
-		this.state = {
-			isOpen: false,
-		};
+		this.state = _reloadState();
+	}
+
+	_onChangeSomething = () => {
+		this.state = _reloadState();
 	}
 
 	componentWillMount() {
@@ -27,7 +44,10 @@ class ConfigContainer extends Component {
 	}
 
 	shouldStateChange(nextState) {
-		return this.state.isOpen !== nextState.isOpen;
+		return this.state.user !== nextState.user
+			|| this.state.adress !== nextState.adress
+			|| this.state.port !== nextState.port
+			|| this.state.passwd !== nextState.passwd;
 	}
 
 	shouldPropsChange(nextProps) {
@@ -38,12 +58,11 @@ class ConfigContainer extends Component {
 		this.router.push(somewhere);
 	}
 
-	setDataInLocalStorage = (name, data) => {
-		_saveDataInLocalStorage(name, data);
+	setDataInLocalStorage = (name, data, callback) => {
+		_saveDataInLocalStorage(name, data, callback);
 	}
 
 	render() {
-		console.log('local storage', localStorage, window.localStorage);
 		return(
 			<div>
 				<AppBarConfig
@@ -51,6 +70,11 @@ class ConfigContainer extends Component {
 				/>
 				<ConfigFormulaire
 					setDataInLocalStorage={this.setDataInLocalStorage}
+					user={this.state.user}
+					passwd={this.state.passwd}
+					adress={this.state.adress}
+					port={this.state.port}
+					updateCallBack={this._onChangeSomething}
 				/>
 			</div>
 		);

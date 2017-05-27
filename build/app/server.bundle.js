@@ -54,9 +54,21 @@
 
 /***/ },
 /* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	eval("'use strict';\n\nObject.defineProperty(exports, \"__esModule\", {\n\tvalue: true\n});\n\nvar _express = __webpack_require__(3);\n\nvar _express2 = _interopRequireDefault(_express);\n\nvar _routes = __webpack_require__(4);\n\nvar _routes2 = _interopRequireDefault(_routes);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nvar port = 3000;\n\nvar MainServer = function MainServer() {\n\tvar _this = this;\n\n\t_classCallCheck(this, MainServer);\n\n\tthis._init = function () {\n\t\tvar app = (0, _express2.default)();\n\t\tapp.set('view engine', 'html');\n\t\tapp.use('/', _routes2.default);\n\t\tapp.use(_express2.default.static('public'));\n\n\t\t_this.server = app.listen(port, function () {\n\t\t\tconsole.log('server is running @ localhost:', _this.server.address().port);\n\t\t\t_this.init = true;\n\t\t});\n\t};\n\n\tthis.server = false;\n\tthis.init = false;\n\tthis._init();\n};\n\nexports.default = new MainServer();\n\n/*****************\n ** WEBPACK FOOTER\n ** ./app/Main_server.js\n ** module id = 2\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./app/Main_server.js?");
+
+/***/ },
+/* 3 */
 /***/ function(module, exports) {
 
-	eval("'use strict';\n\nObject.defineProperty(exports, \"__esModule\", {\n\tvalue: true\n});\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nvar MainServer = function MainServer() {\n\tvar _this = this;\n\n\t_classCallCheck(this, MainServer);\n\n\tthis._init = function () {\n\t\tif (!_this.init) {\n\t\t\tconsole.log('initialisation de app_server');\n\t\t} else {\n\t\t\tconsole.log('app is Already init');\n\t\t}\n\t};\n\n\tthis.init = false;\n\tthis._init();\n};\n\nexports.default = new MainServer();\n\n/*****************\n ** WEBPACK FOOTER\n ** ./app/Main_server.js\n ** module id = 2\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./app/Main_server.js?");
+	eval("module.exports = require(\"express\");\n\n/*****************\n ** WEBPACK FOOTER\n ** external \"express\"\n ** module id = 3\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///external_%22express%22?");
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	eval("'use strict';\n\nObject.defineProperty(exports, \"__esModule\", {\n\tvalue: true\n});\n\nvar _express = __webpack_require__(3);\n\nvar _express2 = _interopRequireDefault(_express);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nvar app = _express2.default.Router({ mergeParams: true });\n\nvar onGetConnectFunction = function onGetConnectFunction(req, res, next) {\n\tconsole.log('connect to client');\n\tres.statue(200);\n\tres.json('true');\n};\n\napp.route('/connect').all(function (req, res, next) {\n\tconsole.log('call connect');\n}).get(onGetConnectFunction);\n\nexports.default = app;\n\n/*****************\n ** WEBPACK FOOTER\n ** ./app/node/routes.js\n ** module id = 4\n ** module chunks = 0\n **/\n//# sourceURL=webpack:///./app/node/routes.js?");
 
 /***/ }
 /******/ ]);

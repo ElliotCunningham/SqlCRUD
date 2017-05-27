@@ -12,7 +12,28 @@
 /******/ 			installedChunks[chunkId] = 0;
 /******/ 		}
 /******/ 		for(moduleId in moreModules) {
-/******/ 			modules[moduleId] = moreModules[moduleId];
+/******/ 			var _m = moreModules[moduleId];
+
+/******/ 			// Check if module is deduplicated
+/******/ 			switch(typeof _m) {
+/******/ 			case "object":
+/******/ 				// Module can be created from a template
+/******/ 				modules[moduleId] = (function(_m) {
+/******/ 					var args = _m.slice(1), templateId = _m[0];
+/******/ 					return function (a,b,c) {
+/******/ 						modules[templateId].apply(this, [a,b,c].concat(args));
+/******/ 					};
+/******/ 				}(_m));
+/******/ 				break;
+/******/ 			case "function":
+/******/ 				// Normal module
+/******/ 				modules[moduleId] = _m;
+/******/ 				break;
+/******/ 			default:
+/******/ 				// Module is a copy of another module
+/******/ 				modules[moduleId] = modules[_m];
+/******/ 				break;
+/******/ 			}
 /******/ 		}
 /******/ 		if(parentJsonpFunction) parentJsonpFunction(chunkIds, moreModules);
 /******/ 		while(callbacks.length)
@@ -94,7 +115,30 @@
 /******/ 	return __webpack_require__(0);
 /******/ })
 /************************************************************************/
-/******/ ({
+/******/ ((function(modules) {
+	// Check all modules for deduplicated modules
+	for(var i in modules) {
+		if(Object.prototype.hasOwnProperty.call(modules, i)) {
+			switch(typeof modules[i]) {
+			case "function": break;
+			case "object":
+				// Module can be created from a template
+				modules[i] = (function(_m) {
+					var args = _m.slice(1), fn = modules[_m[0]];
+					return function (a,b,c) {
+						fn.apply(this, [a,b,c].concat(args));
+					};
+				}(modules[i]));
+				break;
+			default:
+				// Module is a copy of another module
+				modules[i] = modules[modules[i]];
+				break;
+			}
+		}
+	}
+	return modules;
+}({
 
 /***/ 0:
 /***/ function(module, exports, __webpack_require__) {
@@ -139,11 +183,7 @@
 /***/ },
 
 /***/ 303:
-/***/ function(module, exports, __webpack_require__) {
-
-	eval("/* WEBPACK VAR INJECTION */(function(process) {/**\n * Copyright 2013-present, Facebook, Inc.\n * All rights reserved.\n *\n * This source code is licensed under the BSD-style license found in the\n * LICENSE file in the root directory of this source tree. An additional grant\n * of patent rights can be found in the PATENTS file in the same directory.\n *\n * \n */\n\n'use strict';\n\nvar _prodInvariant = __webpack_require__(304);\n\nvar invariant = __webpack_require__(305);\n\n/**\n * Static poolers. Several custom versions for each potential number of\n * arguments. A completely generic pooler is easy to implement, but would\n * require accessing the `arguments` object. In each of these, `this` refers to\n * the Class itself, not an instance. If any others are needed, simply add them\n * here, or in their own files.\n */\nvar oneArgumentPooler = function (copyFieldsFrom) {\n  var Klass = this;\n  if (Klass.instancePool.length) {\n    var instance = Klass.instancePool.pop();\n    Klass.call(instance, copyFieldsFrom);\n    return instance;\n  } else {\n    return new Klass(copyFieldsFrom);\n  }\n};\n\nvar twoArgumentPooler = function (a1, a2) {\n  var Klass = this;\n  if (Klass.instancePool.length) {\n    var instance = Klass.instancePool.pop();\n    Klass.call(instance, a1, a2);\n    return instance;\n  } else {\n    return new Klass(a1, a2);\n  }\n};\n\nvar threeArgumentPooler = function (a1, a2, a3) {\n  var Klass = this;\n  if (Klass.instancePool.length) {\n    var instance = Klass.instancePool.pop();\n    Klass.call(instance, a1, a2, a3);\n    return instance;\n  } else {\n    return new Klass(a1, a2, a3);\n  }\n};\n\nvar fourArgumentPooler = function (a1, a2, a3, a4) {\n  var Klass = this;\n  if (Klass.instancePool.length) {\n    var instance = Klass.instancePool.pop();\n    Klass.call(instance, a1, a2, a3, a4);\n    return instance;\n  } else {\n    return new Klass(a1, a2, a3, a4);\n  }\n};\n\nvar standardReleaser = function (instance) {\n  var Klass = this;\n  !(instance instanceof Klass) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Trying to release an instance into a pool of a different type.') : _prodInvariant('25') : void 0;\n  instance.destructor();\n  if (Klass.instancePool.length < Klass.poolSize) {\n    Klass.instancePool.push(instance);\n  }\n};\n\nvar DEFAULT_POOL_SIZE = 10;\nvar DEFAULT_POOLER = oneArgumentPooler;\n\n/**\n * Augments `CopyConstructor` to be a poolable class, augmenting only the class\n * itself (statically) not adding any prototypical fields. Any CopyConstructor\n * you give this may have a `poolSize` property, and will look for a\n * prototypical `destructor` on instances.\n *\n * @param {Function} CopyConstructor Constructor that can be used to reset.\n * @param {Function} pooler Customizable pooler.\n */\nvar addPoolingTo = function (CopyConstructor, pooler) {\n  // Casting as any so that flow ignores the actual implementation and trusts\n  // it to match the type we declared\n  var NewKlass = CopyConstructor;\n  NewKlass.instancePool = [];\n  NewKlass.getPooled = pooler || DEFAULT_POOLER;\n  if (!NewKlass.poolSize) {\n    NewKlass.poolSize = DEFAULT_POOL_SIZE;\n  }\n  NewKlass.release = standardReleaser;\n  return NewKlass;\n};\n\nvar PooledClass = {\n  addPoolingTo: addPoolingTo,\n  oneArgumentPooler: oneArgumentPooler,\n  twoArgumentPooler: twoArgumentPooler,\n  threeArgumentPooler: threeArgumentPooler,\n  fourArgumentPooler: fourArgumentPooler\n};\n\nmodule.exports = PooledClass;\n/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(300)))\n\n/*****************\n ** WEBPACK FOOTER\n ** ./~/react/lib/PooledClass.js\n ** module id = 303\n ** module chunks = 1\n **/\n//# sourceURL=webpack:///./~/react/lib/PooledClass.js?");
-
-/***/ },
+[873, 304],
 
 /***/ 304:
 /***/ function(module, exports) {
@@ -346,6 +386,13 @@
 
 	eval("/* WEBPACK VAR INJECTION */(function(process) {/**\n * Copyright 2013-present, Facebook, Inc.\n * All rights reserved.\n *\n * This source code is licensed under the BSD-style license found in the\n * LICENSE file in the root directory of this source tree. An additional grant\n * of patent rights can be found in the PATENTS file in the same directory.\n *\n */\n'use strict';\n\nvar _prodInvariant = __webpack_require__(304);\n\nvar ReactElement = __webpack_require__(306);\n\nvar invariant = __webpack_require__(305);\n\n/**\n * Returns the first child in a collection of children and verifies that there\n * is only one child in the collection.\n *\n * See https://facebook.github.io/react/docs/top-level-api.html#react.children.only\n *\n * The current implementation of this function assumes that a single child gets\n * passed without a wrapper, but the purpose of this helper function is to\n * abstract away the particular structure of children.\n *\n * @param {?object} children Child collection structure.\n * @return {ReactElement} The first and only `ReactElement` contained in the\n * structure.\n */\nfunction onlyChild(children) {\n  !ReactElement.isValidElement(children) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'React.Children.only expected to receive a single React element child.') : _prodInvariant('143') : void 0;\n  return children;\n}\n\nmodule.exports = onlyChild;\n/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(300)))\n\n/*****************\n ** WEBPACK FOOTER\n ** ./~/react/lib/onlyChild.js\n ** module id = 332\n ** module chunks = 1\n **/\n//# sourceURL=webpack:///./~/react/lib/onlyChild.js?");
 
+/***/ },
+
+/***/ 873:
+/***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__) {
+
+	eval("/* WEBPACK VAR INJECTION */(function(process) {/**\n * Copyright 2013-present, Facebook, Inc.\n * All rights reserved.\n *\n * This source code is licensed under the BSD-style license found in the\n * LICENSE file in the root directory of this source tree. An additional grant\n * of patent rights can be found in the PATENTS file in the same directory.\n *\n * \n */\n\n'use strict';\n\nvar _prodInvariant = __webpack_require__(__webpack_module_template_argument_0__);\n\nvar invariant = __webpack_require__(305);\n\n/**\n * Static poolers. Several custom versions for each potential number of\n * arguments. A completely generic pooler is easy to implement, but would\n * require accessing the `arguments` object. In each of these, `this` refers to\n * the Class itself, not an instance. If any others are needed, simply add them\n * here, or in their own files.\n */\nvar oneArgumentPooler = function (copyFieldsFrom) {\n  var Klass = this;\n  if (Klass.instancePool.length) {\n    var instance = Klass.instancePool.pop();\n    Klass.call(instance, copyFieldsFrom);\n    return instance;\n  } else {\n    return new Klass(copyFieldsFrom);\n  }\n};\n\nvar twoArgumentPooler = function (a1, a2) {\n  var Klass = this;\n  if (Klass.instancePool.length) {\n    var instance = Klass.instancePool.pop();\n    Klass.call(instance, a1, a2);\n    return instance;\n  } else {\n    return new Klass(a1, a2);\n  }\n};\n\nvar threeArgumentPooler = function (a1, a2, a3) {\n  var Klass = this;\n  if (Klass.instancePool.length) {\n    var instance = Klass.instancePool.pop();\n    Klass.call(instance, a1, a2, a3);\n    return instance;\n  } else {\n    return new Klass(a1, a2, a3);\n  }\n};\n\nvar fourArgumentPooler = function (a1, a2, a3, a4) {\n  var Klass = this;\n  if (Klass.instancePool.length) {\n    var instance = Klass.instancePool.pop();\n    Klass.call(instance, a1, a2, a3, a4);\n    return instance;\n  } else {\n    return new Klass(a1, a2, a3, a4);\n  }\n};\n\nvar standardReleaser = function (instance) {\n  var Klass = this;\n  !(instance instanceof Klass) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Trying to release an instance into a pool of a different type.') : _prodInvariant('25') : void 0;\n  instance.destructor();\n  if (Klass.instancePool.length < Klass.poolSize) {\n    Klass.instancePool.push(instance);\n  }\n};\n\nvar DEFAULT_POOL_SIZE = 10;\nvar DEFAULT_POOLER = oneArgumentPooler;\n\n/**\n * Augments `CopyConstructor` to be a poolable class, augmenting only the class\n * itself (statically) not adding any prototypical fields. Any CopyConstructor\n * you give this may have a `poolSize` property, and will look for a\n * prototypical `destructor` on instances.\n *\n * @param {Function} CopyConstructor Constructor that can be used to reset.\n * @param {Function} pooler Customizable pooler.\n */\nvar addPoolingTo = function (CopyConstructor, pooler) {\n  // Casting as any so that flow ignores the actual implementation and trusts\n  // it to match the type we declared\n  var NewKlass = CopyConstructor;\n  NewKlass.instancePool = [];\n  NewKlass.getPooled = pooler || DEFAULT_POOLER;\n  if (!NewKlass.poolSize) {\n    NewKlass.poolSize = DEFAULT_POOL_SIZE;\n  }\n  NewKlass.release = standardReleaser;\n  return NewKlass;\n};\n\nvar PooledClass = {\n  addPoolingTo: addPoolingTo,\n  oneArgumentPooler: oneArgumentPooler,\n  twoArgumentPooler: twoArgumentPooler,\n  threeArgumentPooler: threeArgumentPooler,\n  fourArgumentPooler: fourArgumentPooler\n};\n\nmodule.exports = PooledClass;\n/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(300)))\n\n/*****************\n ** WEBPACK FOOTER\n ** template of 303 referencing 300, 305\n ** module id = 873\n ** module chunks = 1\n **/\n//# sourceURL=webpack:///template_of_303_referencing_300,_305?");
+
 /***/ }
 
-/******/ });
+/******/ })));

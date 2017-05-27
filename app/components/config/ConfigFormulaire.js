@@ -33,7 +33,7 @@ class ConfigFormulaire extends Component {
 		};
 		console.log('connexion info', connexionInfo);
 
-		this.props.setDataInLocalStorage('conectionInfo', connexionInfo);
+		this.props.setDataInLocalStorage('conectionInfo', connexionInfo, this.props.updateCallBack());
 	}
 
 	renderAdressConnexion() {
@@ -44,6 +44,7 @@ class ConfigFormulaire extends Component {
 			      floatingLabelText="Adress de connexion de la Base"
 			      ref="adressInput"
 			      fullWidth={true}
+			      defaultValue={this.props.adress}
 			    />
 			</div>
 		);
@@ -57,6 +58,7 @@ class ConfigFormulaire extends Component {
 			      floatingLabelText="Port de connexion de la Base"
 			      ref="portInput"
 			      fullWidth={true}
+			      defaultValue={this.props.port}
 			    />
 			</div>
 		);
@@ -70,6 +72,7 @@ class ConfigFormulaire extends Component {
 			      floatingLabelText="Utilisateur de connexion de la Base"
 			      ref="userInput"
 			      fullWidth={true}
+			      defaultValue={this.props.user}
 			    />
 			</div>
 		);
@@ -84,6 +87,7 @@ class ConfigFormulaire extends Component {
 			      ref="passwdInput"
 			      fullWidth={true}
 			      type="password"
+			      defaultValue={this.props.passwd}
 			    />
 			</div>
 		);
