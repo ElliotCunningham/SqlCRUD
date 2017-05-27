@@ -1,4 +1,8 @@
 import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+
+import common from './node/common';
 import apiRoutes from './node/routes';
 
 const port = 3000;
@@ -12,7 +16,12 @@ class MainServer {
 
 	_init = () => {
 		const app = express();
+
+		app.options('*', cors());
+		app.use(bodyParser.urlencoded({ extended: true }));
+		app.use(bodyParser.json());
 		app.set('view engine', 'html');
+		app.use('/', common);
 		app.use('/', apiRoutes);
 		app.use(express.static('public'));
 

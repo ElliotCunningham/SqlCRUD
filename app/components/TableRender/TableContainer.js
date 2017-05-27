@@ -1,24 +1,43 @@
 import React, { Component, PropTypes } from 'react';
+import { Container } from 'flux/utils';
 
-import HttpApi from '../../logic/HttpApi';
+import ApplicationAction from '../../logic/flux/ApplicationAction'
+import ApplicationStore from '../../logic/flux/ApplicationStore';
+
+import DataBaseList from './DataBaseList';
+
+const _selectADataBase = (dataBase) => {
+	ApplicationAction.selectADataBase(dataBase);
+};
+
+const _reloadState = () => {
+	const dataBases = ApplicationStore.getDataBaseAvaible();
+
+	return {
+		dataBases,
+	};
+};
+
 
 class TableContainer extends Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			isOpen: false,
-		};
+		this.state = _reloadState();
 		this.connected = false;
 		this._initBindings();
 	}
 
 	_initBindings() {
-
+		this._onChanges = this._onChanges.bind(this);
 	}
+
+	_onChanges() {
+    	this.setState(_reloadState());
+  	}
 
 	componentWillMount() {
 		this.router = this.props.router;
-		this.connecteServer();
+		ApplicationStore.addChangeListener(this._onChanges);
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
@@ -27,7 +46,7 @@ class TableContainer extends Component {
 	}
 
 	shouldStateChange(nextState) {
-		return this.state.isOpen !== nextState.isOpen;
+		return this.state.dataBases !== nextState.dataBases;
 	}
 
 	shouldPropsChange(nextProps) {
@@ -38,20 +57,20 @@ class TableContainer extends Component {
 		this.router.push(somewhere);
 	}
 
-	connecteServer = () => {
-		HttpApi.getRequest({}, 'http://localhost:3000/connect')
-			.then((res) => {
-				console.log('res', res);
-				this.connected = true;
-			})
-			.catch((err) => {
-				console.log('error', err);
-			})
+	handleSelectDataBase(dataBase) {
+		console.log('you have select', dataBase);
+		_selectADataBase(dataBase);
 	}
 
 	render() {
+		console.log('state', this.state);
 		return(
-			<div>Ici on va mettre les info de la Bdd</div>
+			<div>
+				<DataBaseList
+					dataBases={this.state.dataBases}
+					handleSelectDataBase={this.handleSelectDataBase}
+				/>
+			</div>
 		);
 	}
 }
