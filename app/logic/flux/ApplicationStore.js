@@ -6,11 +6,21 @@ import ApplicationDispatcher from './ApplicationDispatcher';
 class ApplicationStore extends EventEmitter {
 	constructor() {
 		super();
+		this.currentBdd = false;
 		this.dataBaseAvaible = [];
+		this.currentTablesBdd = [];
 	}
 
 	addChangeListener(callback) {
 	   this.on('change', callback);
+	}
+
+	getCurrentBdd() {
+		return this.currentBdd;
+	}
+
+	getTableInDataBase() {
+		return this.currentTablesBdd;
 	}
 
 	getDataBaseAvaible() {
@@ -22,8 +32,14 @@ class ApplicationStore extends EventEmitter {
 		this.emit('change');
 	}
 
-	setDataFromDataBaseInStore(data) {
-		console.log('data in base', data);
+	setCurrentBddInStore(data) {
+		this.currentBdd = data;
+		this.emit('change');
+	}
+
+	setDataTableInStore(data) {
+		this.currentTablesBdd = data;
+		this.emit('change');
 	}
 }
 
@@ -36,7 +52,11 @@ ApplicationStoreInstance.dispatchToken = ApplicationDispatcher.register((action)
 			break;
 
 		case ActionTypes.SET_DATA_FROM_DATABASE_IN_STORE:
-			ApplicationStoreInstance.setDataFromDataBaseInStore(action.data);
+			ApplicationStoreInstance.setDataTableInStore(action.data);
+			break;
+
+		case ActionTypes.SET_CURRENT_BDD_IN_STORE:
+			ApplicationStoreInstance.setCurrentBddInStore(action.data);
 			break;
 
 		default :

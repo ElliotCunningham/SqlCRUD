@@ -34,6 +34,23 @@ const onGetDataInDataBase = (req, res, next) => {
 		});
 }
 
+const onGetAllDataInBdd = (req, res, next) => {
+	const dataConnect = req.body.dataConnect;
+	const dataBase = req.body.dataBase;
+	const tables = req.body.tables;
+
+	NodeSqlApi.getAllDataInAllTables(dataConnect, dataBase, tables)
+		.then((result) => {
+			res.status(200);
+			res.json(result);
+		})
+		.catch((err) => {
+			console.log(err);
+			res.status(404);
+			res.json(err);
+		});
+}
+
 
 app.route('/dataBase')
 	.all((req, res, next) => {
@@ -48,5 +65,12 @@ app.route('/base')
 		next();
 	})
 	.post(onGetDataInDataBase);
+
+app.route('/dataInBase')
+	.all((req, res, next) => {
+		console.log('call get all data');
+		next();
+	})
+	.post(onGetAllDataInBdd);
 
 export default app;

@@ -20,6 +20,11 @@ class HttpApi {
 	selectADataBase(dataConnect, dataBase) {
 		return Axios.post('http://localhost:3000/base', { dataConnect: dataConnect, dataBase: dataBase });
 	}
+
+	getAllDataInAllTablesBdd(dataConnexion, dataBase, res) {
+		const data = { dataConnect: dataConnexion, dataBase: dataBase, tables: res };
+		return Axios.post('http://localhost:3000/dataInBase', data);
+	}
 }
 
 const HttpApiInstance = new HttpApi();

@@ -8,7 +8,7 @@ import Drawer from 'material-ui/Drawer';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import ActionHome from 'material-ui/svg-icons/action/home';
 
-import TableContainer from './TableRender/TableContainer';
+import TableContainer from './DataBaseRender/TableContainer';
 
 class Home extends Component {
 	constructor() {
@@ -88,7 +88,9 @@ class Home extends Component {
 		    		iconElementLeft={<IconButton><ActionHome onTouchTap={this.handleOpenDrawer}/></IconButton>}
 		    		iconElementRight={this.renderMenu()}
 		  		/>
-		  		<TableContainer/>
+		  		<TableContainer
+		  			router={this.router}
+		  		/>
 		  	</div>
 		);
 	}

@@ -86,6 +86,27 @@ class NodeSqlApi {
 		});
 	}
 
+	getAllDataInAllTables(dataConnect, dataBase, tables) {
+		return new Promise((resolve, reject) => {
+			this.connectToSqlServer(dataConnect, dataBase)
+				.then(() => {
+					const dataFinal = {};
+					tables.map((table) => {
+						const query = `SELECT * FROM ${table}`;
+						this.connection.query(query, (error, results, fields) => {
+							if (error) return reject(error);
+							else {
+								console.log('result all data, all table', results);
+							}
+						});
+					});
+				})
+				.catch((err) => {
+					return reject(err);
+				});
+		});
+	}
+
 }
 
 export default new NodeSqlApi();

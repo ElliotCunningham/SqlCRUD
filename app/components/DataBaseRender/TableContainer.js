@@ -1,30 +1,38 @@
 import React, { Component, PropTypes } from 'react';
+import { Container } from 'flux/utils';
 
-import AppBarTable from './AppBarTable';
-
+import ApplicationAction from '../../logic/flux/ApplicationAction'
 import ApplicationStore from '../../logic/flux/ApplicationStore';
 
+import DataBaseList from './DataBaseList';
+
+const _selectADataBase = (dataBase) => {
+	ApplicationAction.selectADataBase(dataBase);
+};
 
 const _reloadState = () => {
-	const tablesInBdd = ApplicationStore.getTableInDataBase();
-	const currentBdd = ApplicationStore.getCurrentBdd();
+	const dataBases = ApplicationStore.getDataBaseAvaible();
+	const tableInDataBase = ApplicationStore.getTableInDataBase();
 
 	return {
-		tablesInBdd,
-		currentBdd,
+		dataBases,
+		tableInDataBase,
 	};
 };
 
+
 class TableContainer extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = _reloadState();
+		this.connected = false;
 		this._initBindings();
 	}
 
 	_initBindings() {
 		this._onChanges = this._onChanges.bind(this);
 		this.navigateSomewhere = this.navigateSomewhere.bind(this);
+		this.handleSelectDataBase = this.handleSelectDataBase.bind(this);
 	}
 
 	_onChanges() {
@@ -32,7 +40,6 @@ class TableContainer extends Component {
   	}
 
 	componentWillMount() {
-		console.log(this.props, this.context);
 		this.router = this.props.router;
 		ApplicationStore.addChangeListener(this._onChanges);
 	}
@@ -43,7 +50,7 @@ class TableContainer extends Component {
 	}
 
 	shouldStateChange(nextState) {
-		return this.state.tablesInBdd !== nextState.tablesInBdd;
+		return this.state.dataBases !== nextState.dataBases;
 	}
 
 	shouldPropsChange(nextProps) {
@@ -54,13 +61,19 @@ class TableContainer extends Component {
 		this.router.push(somewhere);
 	}
 
+	handleSelectDataBase(dataBase) {
+		console.log('you have select', dataBase);
+		_selectADataBase(dataBase);
+		this.navigateSomewhere('dataBase');
+	}
+
 	render() {
-		console.log(this.state);
+		console.log('state', this.state);
 		return(
 			<div>
-				<AppBarTable 
-					navigateSomewhere={this.navigateSomewhere}
-					currentBdd={this.state.currentBdd}
+				<DataBaseList
+					dataBases={this.state.dataBases}
+					handleSelectDataBase={this.handleSelectDataBase}
 				/>
 			</div>
 		);
